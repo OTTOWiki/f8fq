@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>飞八分钱大挑战</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,34 +20,39 @@ body{font-family:'Noto Sans SC',sans-serif;background:#16382f;color:var(--ink);u
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 [hidden]{display:none!important}
 
-canvas#c3d{position:fixed;inset:0;z-index:0}
+canvas#c3d{position:fixed;inset:0;z-index:0;touch-action:none}
 canvas#fx{position:fixed;inset:0;z-index:10;pointer-events:none}
 #vig{position:fixed;inset:0;z-index:5;pointer-events:none;
   background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(20,10,5,.38) 100%)}
 #flash{position:fixed;inset:0;z-index:35;pointer-events:none;opacity:0;background:var(--gold2)}
 
+/* ===== HUD 顶栏防遮挡优化 ===== */
 #hud{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;
-  align-items:flex-start;padding:10px 12px;gap:10px;flex-wrap:wrap;pointer-events:none}
+  align-items:flex-start;padding:8px 60px 8px 10px; /* 右侧留出60px给音效键 */
+  padding-top:calc(8px + env(safe-area-inset-top));gap:8px;
+  flex-wrap:nowrap;pointer-events:none}
 .chip{background:var(--paper);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
-  padding:6px 14px;clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)}
+  padding:4px 10px;clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+  flex-shrink:1;min-width:0}
 #stageChip .k{display:inline-block;background:var(--red);color:var(--cream);font-weight:900;font-size:11px;
-  letter-spacing:.3em;padding:2px 8px;margin-right:8px;vertical-align:2px}
-#stageChip .n{font-family:'ZCOOL QingKe HuangYou';font-size:22px;letter-spacing:.06em}
-#timerBox{background:var(--ink);color:var(--gold2);border:3px solid var(--gold);padding:2px 16px 6px;text-align:center}
-#timerBox small{display:block;font-size:10px;letter-spacing:.5em;color:var(--gold);font-weight:700}
-#timer{font-family:'Chakra Petch';font-weight:700;font-size:38px;line-height:1}
+  letter-spacing:.2em;padding:2px 6px;margin-right:6px;vertical-align:2px}
+#stageChip .n{font-family:'ZCOOL QingKe HuangYou';font-size:18px;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#timerBox{background:var(--ink);color:var(--gold2);border:3px solid var(--gold);padding:2px 12px 4px;text-align:center;flex-shrink:0}
+#timerBox small{display:block;font-size:10px;letter-spacing:.4em;color:var(--gold);font-weight:700}
+#timer{font-family:'Chakra Petch';font-weight:700;font-size:32px;line-height:1}
 #timerBox.low #timer{color:#ff5c3c;animation:blink .45s steps(2) infinite}
 @keyframes blink{50%{opacity:.25}}
 #scoreBox{background:var(--red);color:var(--cream);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
-  padding:4px 16px 8px;text-align:right}
-#scoreBox small{display:block;font-size:10px;letter-spacing:.5em;font-weight:900;color:var(--gold2)}
-#score{font-family:'Chakra Petch';font-weight:700;font-size:34px;line-height:1}
-#combo{position:fixed;top:86px;right:14px;z-index:20;font-family:'ZCOOL QingKe HuangYou';font-size:30px;
+  padding:4px 12px 6px;text-align:right;flex-shrink:0}
+#scoreBox small{display:block;font-size:10px;letter-spacing:.4em;font-weight:900;color:var(--gold2)}
+#score{font-family:'Chakra Petch';font-weight:700;font-size:28px;line-height:1}
+
+#combo{position:fixed;top:75px;right:12px;z-index:20;font-family:'ZCOOL QingKe HuangYou';font-size:26px;
   color:var(--gold2);text-shadow:3px 3px 0 var(--ink);transform:rotate(3deg);pointer-events:none}
 #combo.bump{animation:bump .22s cubic-bezier(.2,2,.4,1)}
 @keyframes bump{0%{transform:rotate(3deg) scale(1.5)}100%{transform:rotate(3deg) scale(1)}}
 
-#subbar{position:fixed;left:12px;right:12px;bottom:12px;z-index:20;display:flex;flex-direction:column;
+#subbar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;display:flex;flex-direction:column;
   align-items:center;gap:8px;pointer-events:none}
 #hint{background:var(--ink);color:var(--cream);font-weight:700;font-size:13px;letter-spacing:.08em;
   padding:6px 18px;border-left:6px solid var(--gold);border-right:6px solid var(--gold)}
@@ -59,7 +64,7 @@ canvas#fx{position:fixed;inset:0;z-index:10;pointer-events:none}
   border-right:3px solid var(--ink);transition:width .12s}
 #gaugeNum{font-family:'Chakra Petch';font-weight:700;font-size:16px}
 
-#bubble{position:fixed;z-index:22;max-width:300px;background:var(--paper);border:3px solid var(--ink);
+#bubble{position:fixed;z-index:22;max-width:280px;background:var(--paper);border:3px solid var(--ink);
   box-shadow:5px 5px 0 rgba(28,20,16,.8);padding:10px 14px;font-weight:900;font-size:15px;line-height:1.5;
   pointer-events:none;animation:bslam .28s cubic-bezier(.2,1.8,.4,1)}
 #bubble::after{content:'';position:absolute;left:26px;bottom:-14px;width:22px;height:14px;background:var(--paper);
@@ -67,13 +72,14 @@ canvas#fx{position:fixed;inset:0;z-index:10;pointer-events:none}
 @keyframes bslam{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
 
 #banner{position:fixed;inset:0;z-index:30;display:grid;place-items:center;pointer-events:none}
-.bCard{position:relative;background:var(--paper);border:5px solid var(--ink);padding:22px 56px 30px;
-  box-shadow:12px 14px 0 rgba(28,20,16,.85);animation:slam .5s cubic-bezier(.18,1.5,.4,1) both;text-align:center}
+.bCard{position:relative;background:var(--paper);border:5px solid var(--ink);padding:22px 40px 30px;
+  box-shadow:12px 14px 0 rgba(28,20,16,.85);animation:slam .5s cubic-bezier(.18,1.5,.4,1) both;text-align:center;max-width:90vw;
+  margin-bottom:30px; /* 为底部锯齿留出空间防溢出 */}
 .bCard::before{content:'';position:absolute;left:-5px;right:-5px;bottom:-25px;height:14px;
   background:conic-gradient(from -45deg at 50% 0,var(--red) 90deg,transparent 0) 0 0/26px 14px repeat-x}
 .bKick{display:inline-block;background:var(--red);color:var(--cream);font-weight:900;font-size:13px;
-  letter-spacing:.45em;padding:3px 12px 3px 18px;margin-bottom:6px}
-.bTitle{font-family:'ZCOOL QingKe HuangYou';font-size:clamp(46px,9vw,88px);line-height:1.05;
+  letter-spacing:.3em;padding:3px 12px 3px 18px;margin-bottom:6px}
+.bTitle{font-family:'ZCOOL QingKe HuangYou';font-size:clamp(36px,8vw,88px);line-height:1.05;
   text-shadow:4px 4px 0 var(--gold)}
 .bSub{margin-top:6px;font-weight:900;color:var(--deep);letter-spacing:.1em;font-size:14px}
 @keyframes slam{0%{transform:scale(2.4) rotate(7deg);opacity:0}100%{transform:scale(1) rotate(-1.5deg);opacity:1}}
@@ -87,40 +93,51 @@ canvas#fx{position:fixed;inset:0;z-index:10;pointer-events:none}
   15%{transform:translate(-50%,-12px) scale(1.2);opacity:1}
   100%{transform:translate(-50%,-80px) scale(1);opacity:0}}
 
-#purityWrap{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(680px,94vw);z-index:25;pointer-events:none}
+#purityWrap{position:fixed;left:50%;bottom:15vh;transform:translateX(-50%);width:min(680px,94vw);z-index:25;pointer-events:none}
 #purityTop{display:flex;justify-content:space-between;align-items:baseline;background:var(--red);color:var(--cream);
   border:3px solid var(--ink);border-bottom:none;padding:4px 12px;font-weight:900}
 #purityTop b{letter-spacing:.3em;font-size:12px}
 #purityVal{font-family:'Chakra Petch';font-weight:700;font-size:20px;color:var(--gold2)}
 #rotBox{font-size:12px;letter-spacing:.15em}
 #purityStrip{background:var(--ink);border:3px solid var(--gold);padding:8px 12px;max-height:24vh;overflow:auto;
-  pointer-events:auto;word-break:break-all;line-height:1.2;font-family:'Chakra Petch'}
+  pointer-events:auto;word-break:break-all;overflow-wrap:anywhere;line-height:1.2;font-family:'Chakra Petch';touch-action:pan-y}
 #purityStrip .base{color:var(--gold)}
 #purityStrip .d9{color:#fff;text-shadow:0 0 6px rgba(255,255,255,.5)}
 
-.btn{display:inline-block;font-family:'ZCOOL QingKe HuangYou';font-size:26px;letter-spacing:.15em;
-  background:var(--red);color:var(--cream);border:4px solid var(--ink);padding:12px 38px;
+.btn{display:inline-block;font-family:'ZCOOL QingKe HuangYou';font-size:24px;letter-spacing:.15em;
+  background:var(--red);color:var(--cream);border:4px solid var(--ink);padding:12px 32px;
   box-shadow:7px 7px 0 var(--ink);transition:transform .12s,box-shadow .12s;
   clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
 .btn:hover{transform:translate(-2px,-2px);box-shadow:10px 10px 0 var(--ink);background:#e8512f}
 .btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
-#muteBtn{position:fixed;top:12px;right:12px;z-index:70;width:44px;height:44px;background:var(--paper);
-  border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-family:'ZCOOL QingKe HuangYou';font-size:20px}
+
+#muteBtn{position:fixed;top:calc(10px + env(safe-area-inset-top));right:10px;z-index:70;width:40px;height:40px;background:var(--paper);
+  border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-family:'ZCOOL QingKe HuangYou';font-size:18px}
 #muteBtn:hover{transform:translate(-1px,-1px)}
 #muteBtn.off{background:#777;color:#ddd}
-#skipBtn{position:fixed;right:16px;bottom:16px;z-index:45;background:var(--ink);color:var(--gold2);
-  border:3px solid var(--gold);padding:8px 22px;font-weight:900;letter-spacing:.2em}
+#skipBtn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:45;background:var(--ink);color:var(--gold2);
+  border:3px solid var(--gold);padding:8px 18px;font-weight:900;letter-spacing:.2em;font-size:14px}
 #skipBtn:hover{background:#33251a}
 
-.overlay{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
-  background:rgba(18,10,6,.42);overflow:auto;padding:20px}
+/* ===== 弹窗/结算界面滚动与防溢出重构 ===== */
+.overlay{position:fixed;inset:0;z-index:60;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start; /* 允许向上滚动 */
+  background:rgba(18,10,6,.42);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  padding:20px;padding-top:calc(20px + env(safe-area-inset-top));padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  
+/* 利用 margin:auto 实现内容在空间足够时垂直居中，超出时正常滚动 */
+.overlay > .panel, .overlay > #titleGrid {
+  margin-top:auto; margin-bottom:auto;
+  width:min(1000px,94vw);
+}
+
 .panel{position:relative;background:var(--paper);border:5px solid var(--ink);box-shadow:14px 16px 0 rgba(20,12,8,.75);
-  max-height:92vh;overflow:auto}
+  max-height:92vh;overflow:auto;padding-top:12px;margin:20px 0;} /* margin 为阴影和 outline 留空间 */
 .panel::before{content:'';position:absolute;left:0;right:0;top:0;height:12px;
-  background:repeating-linear-gradient(90deg,var(--red) 0 22px,var(--gold) 22px 44px)}
+  background:repeating-linear-gradient(90deg,var(--red) 0 22px,var(--gold) 22px 44px);z-index:1;}
 
 #titleGrid{display:grid;grid-template-columns:auto auto;gap:clamp(20px,5vw,70px);align-items:center;
-  width:min(1000px,94vw);padding:clamp(20px,4vh,44px)}
+  padding:clamp(20px,4vh,44px);position:relative}
 #tickets{display:flex;flex-direction:column;gap:12px}
 .ticket{display:flex;align-items:center;gap:12px;background:var(--cream);border:3px solid var(--ink);
   box-shadow:5px 5px 0 var(--ink);padding:8px 16px;transition:transform .15s}
@@ -132,18 +149,18 @@ canvas#fx{position:fixed;inset:0;z-index:10;pointer-events:none}
 .ticket b{display:block;font-size:17px;letter-spacing:.1em}
 .ticket i{display:block;font-style:normal;font-size:11px;color:#7a6a55;font-weight:700}
 #titleRight{text-align:center}
-#vTitle{writing-mode:vertical-rl;font-family:'ZCOOL QingKe HuangYou';font-size:clamp(52px,10vh,104px);
+#vTitle{writing-mode:vertical-rl;font-family:'ZCOOL QingKe HuangYou';font-size:clamp(48px,9vh,104px);
   letter-spacing:.12em;line-height:1.15;color:var(--cream);margin:0 auto;
   text-shadow:4px 4px 0 var(--ink),9px 9px 0 var(--red)}
 #titleSub{margin:14px 0 20px;font-weight:900;color:var(--cream);letter-spacing:.2em;font-size:14px;
   text-shadow:2px 2px 0 var(--ink)}
-#badge{position:absolute;top:8px;right:-14px;width:96px;height:96px;background:var(--red);color:var(--cream);
+#badge{position:absolute;top:-15px;right:-15px;width:96px;height:96px;background:var(--red);color:var(--cream);
   display:grid;place-items:center;text-align:center;font-family:'ZCOOL QingKe HuangYou';font-size:17px;line-height:1.2;
-  border:4px solid var(--ink);transform:rotate(9deg);animation:wob 3.4s ease-in-out infinite;z-index:2}
+  border:4px solid var(--ink);transform:rotate(9deg);animation:wob 3.4s ease-in-out infinite;z-index:10}
 @keyframes wob{0%,100%{transform:rotate(5deg)}50%{transform:rotate(13deg)}}
 #tinyNote{margin-top:14px;font-size:11px;color:var(--cream);letter-spacing:.1em;text-shadow:1px 1px 0 var(--ink)}
 
-#resultPanel{width:min(720px,94vw);padding:34px clamp(18px,4vw,46px) 30px;text-align:center}
+#resultPanel{width:100%;padding:24px clamp(18px,4vw,46px) calc(30px + env(safe-area-inset-bottom));text-align:center}
 #resultPanel h2{font-family:'ZCOOL QingKe HuangYou';font-size:34px;letter-spacing:.2em;margin:6px 0 14px}
 .rRow{display:grid;grid-template-columns:96px 1fr 70px;gap:10px;align-items:center;padding:8px 0;
   border-bottom:2px dashed #c9b791;opacity:0;transform:translateX(-30px);animation:rowIn .4s ease-out forwards}
@@ -161,14 +178,35 @@ canvas#fx{position:fixed;inset:0;z-index:10;pointer-events:none}
 #rankSub{font-weight:900;color:var(--deep);letter-spacing:.15em;margin-bottom:16px;font-size:14px}
 .stamp{display:inline-block;border:6px solid var(--red);color:var(--red);padding:8px 30px;
   font-family:'ZCOOL QingKe HuangYou';font-size:clamp(38px,7vw,58px);letter-spacing:.1em;background:rgba(216,68,43,.05);
-  animation:stampIn .45s cubic-bezier(.2,1.9,.4,1) both;outline:3px solid var(--red);outline-offset:5px}
+  animation:stampIn .45s cubic-bezier(.2,1.9,.4,1) both;outline:3px solid var(--red);outline-offset:5px;
+  margin:20px 10px;} /* margin 防止 outline 被 panel 的 overflow 裁切 */
 @keyframes stampIn{0%{transform:scale(3.2) rotate(6deg);opacity:0}100%{transform:scale(1) rotate(-5deg);opacity:1}}
 
+/* ===== 移动端专项适配 ===== */
 @media (max-width:760px){
-  #titleGrid{grid-template-columns:1fr;gap:24px;justify-items:center}
-  #vTitle{font-size:clamp(44px,9vw,64px)}
-  #timer{font-size:30px}#score{font-size:26px}
+  #titleGrid{grid-template-columns:1fr;gap:24px;justify-items:center;padding-top:20px}
+  
+  /* 移动端标题改为水平，防止垂直文字过高撑爆屏幕导致无法滚动 */
+  #vTitle{
+    writing-mode:horizontal-tb;
+    font-size:clamp(32px,8vw,48px);
+    letter-spacing:.1em;
+    line-height:1.2;
+    text-shadow:3px 3px 0 var(--ink),6px 6px 0 var(--red);
+    margin:0 0 10px 0;
+  }
+  
+  .ticket{width:100%} /* 票券撑满宽度 */
   .rRow{grid-template-columns:80px 1fr 60px}
+  
+  #badge{width:72px;height:72px;font-size:13px;line-height:1.1;top:-10px;right:-5px}
+  
+  #stageChip .n{font-size:15px}
+  #stageChip .k{font-size:9px;padding:2px 4px;margin-right:4px}
+  .chip{padding:3px 6px}
+  #timer{font-size:26px}
+  #score{font-size:22px}
+  #combo{top:65px;font-size:22px;right:8px}
 }
 </style>
 </head>
@@ -203,8 +241,8 @@ canvas#fx{position:fixed;inset:0;z-index:10;pointer-events:none}
 <button id="muteBtn" title="声音开关">声</button>
 
 <div id="title" class="overlay">
-  <div id="badge">全程约<br>五分钟</div>
   <div id="titleGrid">
+    <div id="badge">全程约<br>五分钟</div>
     <div id="tickets">
       <div class="ticket"><span class="no">壹</span><span><b>飞八分钱</b><i>限时抛币入飞门，一枚 30 分</i></span></div>
       <div class="ticket"><span class="no">贰</span><span><b>干飞马</b><i>白粥火炮轰满60勺，灌满它就笑哈哈</i></span></div>
@@ -236,9 +274,6 @@ canvas#fx{position:fixed;inset:0;z-index:10;pointer-events:none}
 <script>
 /* ============================================================
    飞八分钱大挑战 v4（平衡：正常人得分率提升至 75~90%）
-   手段：辅助瞄准、白粥减量、命中框放大、洗币曲线放缓、
-   分数曲线下保底上调、满分基准重设。
-   内部调参参考（请勿展示给玩家）：手速 7~15 次/秒，画圈 2~4 圈/秒。
 ============================================================ */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const lerp=(a,b,k)=>a+(b-a)*k;
@@ -409,7 +444,7 @@ function rebuildGate(){
   plq.position.set(0,G.baseY+G.openH+.55,.68);gate.add(plq);
 }
 rebuildGate();
-function gateXAt(t){return Math.sin(t*G.sp)*G.amp;}   // 与主循环摆动公式一致，可预测
+function gateXAt(t){return Math.sin(t*G.sp)*G.amp;}
 
 /* ---------- 贴图 ---------- */
 function coinTexture(){
@@ -576,7 +611,6 @@ const S1={t:45,coins:0,combo:0};
 const S2={p:0,need:60,t:0,held:false,ax:W/2,ay:H/2,last:-9,done:false,lastBark:0,wt:0,tx:0,ty:6.6};
 const S3={t:0,count:0,need:55,done:false};
 const S4={t:35,units:0,washing:false,lastAng:null,moveAcc:0,snd:0,lastSec:99,lastNine:0,screen:null,dirtAcc:0};
-/* 洗币：约 35 圈到 99%，之后每 2 圈多一个 9 */
 const U99=8*Math.log(80);
 function purityNow(){return 20+80*(1-Math.exp(-S4.units/8));}
 function ninesNow(){return S4.units<=U99?0:1+Math.floor((S4.units-U99)/2);}
@@ -609,7 +643,6 @@ function throwThing(isMinute,px,py){
   const tgt=new THREE.Vector3();
   if(!rc.ray.intersectPlane(aimPlane,tgt))return;
   tgt.x=clamp(tgt.x,-12,12);tgt.y=clamp(tgt.y,1.2,11.8);tgt.z=GATE_Z;
-  /* 辅助瞄准：点击在门洞附近时，吸入计分區（按到达时刻预测门位置） */
   const gx=gateXAt(tGame+.55),half=G.openW/2;
   if(Math.abs(tgt.x-gx)<half+1.6&&tgt.y>G.baseY-1.2&&tgt.y<G.baseY+G.openH+1.2){
     tgt.x=clamp(tgt.x,gx-half+.35,gx+half-.35);
@@ -784,7 +817,6 @@ function startStage4(){
   setTimeout(()=>showHint('纯度低于99%看洁净度 · 超过99%看小数点后9的个数'),1850);
   setTimeout(()=>say('把币洗！圈要圆，心要诚，纯度要高！',{pitch:1.05}),1900);
 }
-/* --- 洗币 --- */
 function resetGrime(){
   const g=bigCoinG.grimeCtx;
   g.clearRect(0,0,512,512);
@@ -886,7 +918,6 @@ function endWash(){
   say(nines>0?`纯度九十九点${'九'.repeat(Math.min(nines,6))}……后面还有${nines}个9！本马非常满意！`:'纯度不到九十九？重洗！开玩笑的，结算吧。',{pitch:1.1,dur:3200});
   setTimeout(showResult,3200);
 }
-/* --- 结算 --- */
 const RANKS=[
   [65000,'顺到发光','飞马称你为「顺之大帝」'],
   [61000,'巨顺','白粥满溢 · 八分钱锃亮'],
@@ -923,9 +954,8 @@ function showResult(){
   },1600);
 }
 
-/* ================= 输入 ================= */
 addEventListener('pointerdown',e=>{
-  if(e.target.closest('button')||e.target.closest('.overlay'))return;
+  if(e.target.closest('button')||e.target.closest('.overlay')||e.target.closest('#purityWrap'))return;
   if(mode==='s1')throwThing(false,e.clientX,e.clientY);
   else if(mode==='s3')throwThing(true,e.clientX,e.clientY);
   else if(mode==='s2'){S2.held=true;S2.ax=e.clientX;S2.ay=e.clientY;tryFire();}
@@ -933,6 +963,7 @@ addEventListener('pointerdown',e=>{
     foam(e.clientX,e.clientY,3);}
 },{passive:true});
 addEventListener('pointermove',e=>{
+  if(e.target.closest('#purityWrap'))return;
   if(mode==='s2'){S2.ax=e.clientX;S2.ay=e.clientY;}
   else if(mode==='s4'&&S4.washing){washMove(e.clientX,e.clientY);
     if(Math.random()<.5)foam(e.clientX,e.clientY,2);}
@@ -963,7 +994,6 @@ function drawFx(rdt){
   fxg.globalAlpha=1;
 }
 
-/* ================= 主循环 ================= */
 $('startBtn').addEventListener('click',startGame);
 $('againBtn').addEventListener('click',()=>location.reload());
 $('skipBtn').addEventListener('click',()=>{
@@ -1029,7 +1059,6 @@ function loop(now){
       horse.g.position.set(Math.sin(tGame*.35)*9,7.5+Math.sin(tGame*.9)*.8,-15);
       horse.g.rotation.y=Math.sin(tGame*.35)*.4;
     }else if(mode==='s2'&&horse.bob){
-      /* 躲闪移动：变向更慢、幅度更小，方便普通人命中 */
       S2.wt-=rdt;
       if(S2.wt<=0){S2.wt=rand(.8,1.3);S2.tx=rand(-4.2,4.2);S2.ty=rand(5,8.6);}
       horse.g.position.x+=(S2.tx-horse.g.position.x)*Math.min(1,rdt*2.2);
@@ -1096,10 +1125,14 @@ function loop(now){
     const e=worldToScreen(new THREE.Vector3(3.4,6.2,-2));
     S4.screen={cx:c.x,cy:c.y,Rpx:Math.abs(e.x-c.x)||1};
   }
+  
   if(!ui.bubble.hidden){
     const hp=worldToScreen(new THREE.Vector3(horse.g.position.x,horse.g.position.y+2.6,horse.g.position.z));
-    ui.bubble.style.left=clamp(hp.x-40,8,W-310)+'px';
-    ui.bubble.style.top=clamp(hp.y-ui.bubble.offsetHeight-26,8,H-120)+'px';
+    const bW = Math.min(280, W - 16);
+    ui.bubble.style.maxWidth = bW + 'px';
+    const maxLeft = Math.max(8, W - bW - 8);
+    ui.bubble.style.left = clamp(hp.x - bW/2, 8, maxLeft) + 'px';
+    ui.bubble.style.top = clamp(hp.y - ui.bubble.offsetHeight - 26, 8, H - 120) + 'px';
   }
 
   camera.position.lerp(camTarget,1-Math.pow(.002,rdt));
